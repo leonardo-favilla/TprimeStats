@@ -6,7 +6,8 @@ from samples import *
 import subprocess
 ROOT.gROOT.SetBatch()
 
-era = "2022tot"#"2022_2023tot" #"2023"#"projectionRun3"#"2022tot"#"2022"#"2022EE"#
+era = "v1125_2223tot"#"2022_set3allCR" #"2022_set2SRTopLoose" #"2022_set1basic"
+# "2022tot"#"2022_2023tot" #"2023"#"projectionRun3"#"2022tot"#"2022"#"2022EE"#
 
 def read_combineOutput(mass=0.7):
     print("Reading combine output for mass", mass)
@@ -30,8 +31,8 @@ def read_combineOutput(mass=0.7):
             expected_97_5 = float(line.split()[-1])
     return expected, expected_16, expected_84, expected_2_5, expected_97_5
 
-# masses      = [0.7, 1, 1.8]
-masses      = [0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8]
+masses      = [0.7, 1, 1.8]
+# masses      = [0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8]
 sigma       = [sample_dict["TprimeToTZ_"+str(int(m*10**3))+"_2022"].sigma for m in masses]
 ex          = [1 , 1, 1]
 
@@ -74,7 +75,9 @@ thw5  = ROOT.TGraph(len(x), array('d',x),  array('d',[0.3877, 0.20453, 0.113759,
 
 masses_observedFullRun2 = [0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8]
 y_observedFullRun2      = [0.21201, 0.09651, 0.07699, 0.07321, 0.06227, 0.04283, 0.04972, 0.04938, 0.03669, 0.02263, 0.0183, 0.01505]
+y_expectedFullRun2      = [0.36702, 0.1707, 0.10685, 0.07576, 0.05272, 0.03193, 0.02376, 0.01967, 0.01859, 0.01639, 0.01372, 0.01271]
 obsrun2                 = ROOT.TGraph(len(masses_observedFullRun2), array('d',masses_observedFullRun2),  array('d',y_observedFullRun2))
+exprun2                 = ROOT.TGraph(len(masses_observedFullRun2), array('d',masses_observedFullRun2),  array('d',y_expectedFullRun2))
 
 # Styling
 # CMS.SetExtraText("Preliminary")
@@ -82,19 +85,19 @@ CMS.SetExtraText("Work in progress")
 iPos = 0
 canv_name = 'limitplot_root'
 if era == "2022":
-    CMS.SetLumi("7.87")
+    CMS.SetLumi("7.980")
 elif era == "2022EE":
-    CMS.SetLumi("26.67")
+    CMS.SetLumi("26.672")
 elif era == "2022tot":
-    CMS.SetLumi("34.54")
-elif era == "projectionRun3":
-    CMS.SetLumi("184")
+    CMS.SetLumi("34.65")
 elif era == "2023":
-    CMS.SetLumi("17.794")
-elif era == "2023BPix":
-    CMS.SetLumi("9.451")
+    CMS.SetLumi("18.063")
+elif era == "2023postBPix":
+    CMS.SetLumi("9.693")
 elif era == "2022_2023tot":
-    CMS.SetLumi("61.34")
+    CMS.SetLumi("62.41")
+elif era == "v1125_2223tot":
+    CMS.SetLumi("62.41")
 
 CMS.SetEnergy("13.6")
 CMS.ResetAdditionalInfo()
@@ -104,6 +107,8 @@ CMS.cmsDraw(ge2, "3L", fcolor = ROOT.TColor.GetColor("#F5BB54"))
 CMS.cmsDraw(ge, "3", fcolor = ROOT.TColor.GetColor("#607641"))
 CMS.cmsDraw(g, "L", lstyle=ROOT.kDashed)
 CMS.cmsDraw(th, "L", lcolor = ROOT.TColor.GetColor("#bd1f01"), lwidth=2)
+CMS.cmsDraw(obsrun2, "L", lcolor = ROOT.TColor.GetColor("#964a8b"), lwidth=2)
+CMS.cmsDraw(exprun2, "L", lcolor = ROOT.TColor.GetColor("#964a8b"), lwidth=2, lstyle=ROOT.kDashed)
 
 canv.SetLogy()
 leg = CMS.cmsLeg(0.3, 0.90 - 0.05 * 4, 0.95, 0.90, textSize=0.04)
@@ -111,6 +116,8 @@ leg.AddEntry(g, "expected","L")
 leg.AddEntry(ge, "68% expected","F")
 leg.AddEntry(ge2, "95% expected","F")
 leg.AddEntry(th, "#sigma(NLO), Singlet T, #Gamma/m_{T}<0.01","L")
+leg.AddEntry(obsrun2, "observed Full Run 2","L")
+leg.AddEntry(exprun2, "expected Full Run 2","L")
 CMS.SaveCanvas(canv, "./"+era+"/limitPlot4SR2rateParams_"+era+".png", False)
 CMS.SaveCanvas(canv, "./"+era+"/limitPlot4SR2rateParams_"+era+".pdf")
 # Save expected limits
@@ -144,6 +151,7 @@ thw5  = ROOT.TGraph(len(x), array('d',x),  array('d',[0.3877, 0.20453, 0.113759,
 
 masses_observedFullRun2 = [0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8]
 y_observedFullRun2      = [0.21201, 0.09651, 0.07699, 0.07321, 0.06227, 0.04283, 0.04972, 0.04938, 0.03669, 0.02263, 0.0183, 0.01505]
+y_expectedFullRun2      = [0.36702, 0.1707, 0.10685, 0.07576, 0.05272, 0.03193, 0.02376, 0.01967, 0.01859, 0.01639, 0.01372, 0.01271]
 obsrun2                 = ROOT.TGraph(len(masses_observedFullRun2), array('d',masses_observedFullRun2),  array('d',y_observedFullRun2))
 
 # Styling
@@ -152,11 +160,19 @@ CMS.SetExtraText("Work in progress")
 iPos = 0
 canv_name = 'limitplot_root'
 if era == "2022":
-    CMS.SetLumi("7.87")
+    CMS.SetLumi("7.980")
 elif era == "2022EE":
-    CMS.SetLumi("26.67")
+    CMS.SetLumi("26.672")
 elif era == "2022tot":
-    CMS.SetLumi("34.54")
+    CMS.SetLumi("34.65")
+elif era == "2023":
+    CMS.SetLumi("18.063")
+elif era == "2023postBPix":
+    CMS.SetLumi("9.693")
+elif era == "2022_2023tot":
+    CMS.SetLumi("62.41")
+elif era == "v1125_2223tot":
+    CMS.SetLumi("62.41")
 
 CMS.SetEnergy("13.6")
 CMS.ResetAdditionalInfo()

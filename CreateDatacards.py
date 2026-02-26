@@ -69,10 +69,10 @@ def CollectHistos(inputEosFolder, jsonInput, era):
                         h_out = None
                         for f in bkg_files[b]:
                             input = ROOT.TFile.Open(folder + f)
-                            print(input, var+"_"+r+"__"+syst+v)
+                            print(input, var+"_"+r+"_"+syst+v)
                             tmp = copy.deepcopy(ROOT.TH1D(input.Get(var+"_"+r+"_"+syst+v)))
                             tmp.Scale(lumi)
-                            xbins = array('d', [500, 550, 600, 650, 700, 750, 800, 850, 900, 1000, 1200, 1400, 1600, 2000])
+                            xbins = array('d', [500, 600, 700, 800, 1000, 1400, 2000])
                             nbin = len(xbins)-1
                             tmp = tmp.Rebin(nbin, "hist_"+b+"_"+r+"_"+syst+v, xbins)
                             if h_out == None:
@@ -88,9 +88,10 @@ def CollectHistos(inputEosFolder, jsonInput, era):
                         h_out = None
                         for f in signal_files[s]:
                             input = ROOT.TFile.Open(folder + f)
+                            print(input, var+"_"+r+"_"+syst+v)
                             tmp = copy.deepcopy(ROOT.TH1D(input.Get(var+"_"+r+"_"+syst+v)))
                             tmp.Scale(lumi)
-                            xbins = array('d', [500, 550, 600, 650, 700, 750, 800, 850, 900, 1000, 1200, 1400, 1600, 2000])
+                            xbins = array('d', [500, 600, 700, 800, 1000, 1400, 2000])
                             nbin = len(xbins)-1
                             tmp = tmp.Rebin(nbin, "hist_"+b+"_"+r+"_"+syst+v, xbins)
                             h_out = tmp.Clone("")
@@ -103,9 +104,10 @@ def CollectHistos(inputEosFolder, jsonInput, era):
                 h_out = None
                 for f in bkg_files[b]:
                     input = ROOT.TFile.Open(folder + f)
+                    print(input, vvar+"_"+r+"_nominal")
                     tmp = copy.deepcopy(ROOT.TH1D(input.Get(var+"_"+r+"_nominal")))
                     tmp.Scale(lumi)
-                    xbins = array('d', [500, 550, 600, 650, 700, 750, 800, 850, 900, 1000, 1200, 1400, 1600, 2000])
+                    xbins = array('d', [500, 600, 700, 800, 1000, 1400, 2000])
                     nbin = len(xbins)-1
                     tmp = tmp.Rebin(nbin, "hist_"+b+"_"+r+"_"+syst+v, xbins)
                     if h_out == None:
@@ -121,7 +123,12 @@ def CollectHistos(inputEosFolder, jsonInput, era):
                 h_out = None
                 for f in signal_files[s]:
                     input = ROOT.TFile.Open(folder + f)
+                    print(input, var+"_"+r+"_nominal")
                     tmp = copy.deepcopy(ROOT.TH1D(input.Get(var+"_"+r+"_nominal")))
+                    tmp.Scale(lumi)
+                    xbins = array('d', [500, 600, 700, 800, 1000, 1400, 2000])
+                    nbin = len(xbins)-1
+                    tmp = tmp.Rebin(nbin, "hist_"+b+"_"+r+"_nominal", xbins)
                     h_out = tmp.Clone("")
                     h_out.SetName("hist_"+s+"_"+r+"_nominal")
                     output.cd()
@@ -131,6 +138,7 @@ def CollectHistos(inputEosFolder, jsonInput, era):
         for r in bins:
             for f in data_files:
                 input = ROOT.TFile.Open(folder + f)
+                print(input, var+"_"+r+"_")
                 tmp = copy.deepcopy(ROOT.TH1D(input.Get(var+"_"+r+"_")))
                 if h_out == None:
                     h_out = tmp.Clone("")
@@ -147,6 +155,7 @@ def CollectHistos(inputEosFolder, jsonInput, era):
         for r in bins:
             h_out = None
             for b in jsonInput["processes"]["backgrounds"]:
+                print(input, "hist_"+b+"_"+r+"_nominal")
                 tmp = copy.deepcopy(ROOT.TH1D(input.Get("hist_"+b+"_"+r+"_nominal")))
                 for i in range(1, tmp.GetNbinsX()+1):
                     tmp.SetBinContent(i, int(tmp.GetBinContent(i)))

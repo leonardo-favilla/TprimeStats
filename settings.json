@@ -3,11 +3,12 @@
     
     "processes"     : { 
                         "backgrounds": ["WJets", "TT", "QCD", "ZJets"],
-                        "signals": ["TprimeToTZ_700", "TprimeToTZ_800", "TprimeToTZ_900", "TprimeToTZ_1000", "TprimeToTZ_1100", "TprimeToTZ_1200", "TprimeToTZ_1300", "TprimeToTZ_1400", "TprimeToTZ_1500", "TprimeToTZ_1600", "TprimeToTZ_1700","TprimeToTZ_1800"]
+                        "signals": ["TprimeToTZ_700", "TprimeToTZ_1000", "TprimeToTZ_1800"]
                         },
     
-    "categories"    : ["MixSR0fjets", "MixSRatleast1fjets", "MerSR0fjets", "MerSRatleast1fjets", 
-                        "AH", "SL", "AH1lWR", "AH0lZR"],
+    "categories"    : ["SRTopMix0fjets", "SRTopMixatleast1fjets", "SRTopMer0fjets", "SRTopMeratleast1fjets",
+                        "AH", "SL", "AH1lWR", "AH0lZR"
+                        ],
     
     "systematics"   : {
                         "lumi" : {
@@ -15,13 +16,7 @@
                             "processes": "", 
                             "bin": "", 
                             "type": "lnN", 
-                            "value": 1.4},
-                        "ZJets_norm" : {
-                            "name": "ZJets_norm", 
-                            "processes": ["ZJets"], 
-                            "bin": ["AH0lZR"] , 
-                            "type": "rateParam", 
-                            "value": 1.0  },
+                            "value": 1.001},
                         "WJets_norm" : {
                             "name": "WJets_norm", 
                             "processes": ["WJets"], 
