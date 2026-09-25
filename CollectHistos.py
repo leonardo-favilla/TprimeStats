@@ -1,0 +1,167 @@
+#!/usr/bin/env python3
+
+import argparse, json, math, os, ROOT
+from array import array
+import sys
+import subprocess
+
+parser = argparse.ArgumentParser(description="Collect histograms for one era")
+parser.add_argument("-e", "--era",              default="2022",                 help="Era to process, e.g. 2022, 2022EE, 2022+2023, etc.")
+parser.add_argument("-j", "--jsonInput",        default="settings.json",        help="Settings JSON file")
+parser.add_argument("-u", "--unblind",          action="store_true",            help="Use data instead of the background sum")
+parser.add_argument("--addSyst",                action="store_true",            help="Collect shape systematics")
+opt = parser.parse_args()
+
+def CollectHistos(inputEosFolder, outFolderPath, jsonInput, era, unblind=False, addSyst=False):
+    inputEosFolder  = inputEosFolder.rstrip("/")
+    outFolderPath   = outFolderPath.rstrip("/")
+    lumi            = jsonInput["lumi_dict"][era]
+    var             = jsonInput["variable"]
+    bins            = jsonInput["categories"]
+    backgrounds     = jsonInput["processes"]["backgrounds"]
+    signals         = jsonInput["processes"]["signals"]
+    files           = [f for f in os.listdir(inputEosFolder) if f.endswith(".root")]
+    processFiles    = {p: [f for f in files if f.startswith(p)] for p in backgrounds + signals}
+    dataFiles       = [f for f in files if f.startswith("Data")]
+    all_processes   = backgrounds + signals
+    systs           = [("nominal", "nominal", all_processes)]
+    if addSyst:
+        for syst in jsonInput["systematics"].values():
+            if syst["type"] != "shape":
+                continue
+
+            target_processes = syst["processes"]
+            if target_processes == "":
+                target_processes = all_processes
+            elif isinstance(target_processes, str):
+                target_processes = [target_processes]
+
+            systs += [
+                (f"{syst['branchRootFile']}_up", f"{syst['name']}Up", target_processes),
+                (f"{syst['branchRootFile']}_down", f"{syst['name']}Down", target_processes),
+            ]
+
+    os.makedirs(outFolderPath, exist_ok=True)
+    output              = ROOT.TFile(f"{outFolderPath}/histo{era}.root", "RECREATE")
+    xbins               = array("d", [500, 600, 700, 800, 1000, 1400, 2000])
+    nominalHistos       = {}
+    componentIntegrals  = {}
+    summaryInfo         = {}
+    
+    ##### Collect MONTECARLO histograms #####
+    for inputSyst, outputSyst, target_processes in systs:
+        for process, processFileList in processFiles.items():
+            if process not in target_processes:
+                continue
+            for region in bins:
+                h_out                           = None
+                inputName                       = f"{var}_{region}_{inputSyst}"
+                outputName                      = f"hist_{process}_{region}_{outputSyst}"
+                componentIntegrals[outputName]  = []
+                summaryInfo[outputName]         = (region, outputSyst, process)
+                for i, f in enumerate(processFileList):
+                    inputFile                   = ROOT.TFile.Open(f"{inputEosFolder}/{f}")
+                    tmp                         = inputFile.Get(inputName)
+                    tmp                         = tmp.Clone(f"{outputName}_source{i}")
+                    tmp.SetDirectory(0)
+                    inputFile.Close()
+                    tmp.Scale(lumi)
+                    tmp                         = tmp.Rebin(len(xbins)-1, f"{outputName}_rebin{i}", xbins)
+                    tmp.SetDirectory(0)
+                    componentIntegrals[outputName].append((f, tmp.Integral()))
+                    
+                    if h_out is None:
+                        h_out                   = tmp.Clone(outputName)
+                        h_out.SetDirectory(0)
+                    else:
+                        h_out.Add(tmp)
+                output.cd()
+                print(f"Wrote {outputName}: integral={h_out.Integral():.6f}")
+                h_out.Write()
+                if inputSyst == "nominal":
+                    nominalHistos[(process, region)] = h_out.Clone()
+                nominalHistos[(process, region)].SetDirectory(0)
+    print(componentIntegrals)
+
+    ##### Collect DATA histograms #####
+    for region in bins:
+        outputName                      = f"hist_data_obs_{region}_nominal"
+        h_out                           = None
+        componentIntegrals[outputName]  = []
+        summaryInfo[outputName]         = (region, "nominal", "data_obs")
+        if unblind:
+            if not dataFiles: raise RuntimeError("No data ROOT files found")
+            inputName = f"{var}_{region}_"
+            for i, f in enumerate(dataFiles):
+                input = ROOT.TFile.Open(f"{inputEosFolder}/{f}")
+                tmp = input.Get(inputName)
+                if not tmp:
+                    input.Close()
+                    raise RuntimeError(f"Histogram {inputName} not found in {inputEosFolder}/{f}")
+                tmp = tmp.Clone(f"{outputName}_source{i}")
+                tmp.SetDirectory(0)
+                input.Close()
+                tmp = tmp.Rebin(len(xbins)-1, f"{outputName}_rebin{i}", xbins)
+                tmp.SetDirectory(0)
+                componentIntegrals[outputName].append((f, tmp.Integral()))
+                if h_out is None: h_out = tmp.Clone(outputName); h_out.SetDirectory(0)
+                else: h_out.Add(tmp)
+        else:
+            for process in backgrounds:
+                tmp = nominalHistos[(process, region)]
+                if h_out is None: h_out = tmp.Clone(outputName); h_out.SetDirectory(0)
+                else: h_out.Add(tmp)
+                inputName = f"hist_{process}_{region}_nominal"
+                componentIntegrals[outputName] += [(f"{process}: {f}", integral) for f, integral in componentIntegrals[inputName]]
+        output.cd()
+        h_out.Write()
+
+    output.Close()
+    output                  = ROOT.TFile.Open(f"{outFolderPath}/histo{era}.root", "READ")
+    validationErrors        = 0
+    for outputName, components in componentIntegrals.items():
+        histogram           = output.Get(outputName)
+        if not histogram:
+            print(f"ERROR {outputName}: histogram is missing from the output file")
+            validationErrors += 1
+            continue
+        region, systematic, process = summaryInfo[outputName]
+        componentSum                = sum(integral for _, integral in components)
+        finalIntegral               = histogram.Integral()
+        integralOK                  = math.isclose(componentSum, finalIntegral, rel_tol=1e-9, abs_tol=1e-9)
+        print(f"\nSUMMARY region={region} systematic={systematic} process={process}")
+        for component, integral in components:
+            print(f"  {component:<55} {integral:>16.6f}")
+        print(f"  {'SUM OF COMPONENTS':<55} {componentSum:>16.6f}")
+        print(f"  {'FINAL HISTOGRAM':<55} {finalIntegral:>16.6f}")
+        print(f"  RESULT: {'PASS' if integralOK else 'FAIL'}")
+        if not integralOK:
+            validationErrors += 1
+    output.Close()
+    if validationErrors: raise RuntimeError(f"Histogram integral validation failed for {validationErrors} histograms")
+    print(f"Created {outFolderPath}/histo{era}.root")
+
+def HaddHistos(era, outFolderPath, jsonInput):
+    sub_eras        = era.split("+")
+    outFolderPath   = outFolderPath.rstrip("/")
+    os.makedirs(outFolderPath, exist_ok=True)
+    outFilePath     = f"{outFolderPath}/histo{era}.root"
+    for sub_era in sub_eras:
+        inFilePath  = f"{jsonInput['dc-folder'][sub_era]}/histo{sub_era}.root"
+        if not os.path.exists(inFilePath):
+            raise RuntimeError(f"Missing histo{sub_era}.root file for era {sub_era} in folder {jsonInput['dc-folder'][sub_era]}. Please run CollectHistos.py for era {sub_era} first.")
+    haddCommand = f"hadd -f {outFilePath} " + " ".join([f"{jsonInput['dc-folder'][sub_era]}/histo{sub_era}.root" for sub_era in sub_eras])
+    print(f"Running command: {haddCommand}")
+    result = subprocess.run(haddCommand, shell=True)
+
+
+
+
+if __name__ == "__main__":
+    with open(opt.jsonInput) as file:
+        jsonInput = json.load(file)
+
+    if "+" in opt.era:
+        HaddHistos(opt.era, jsonInput["dc-folder"][opt.era], jsonInput)
+    else:    
+        CollectHistos(jsonInput["plots-folder"][opt.era], jsonInput["dc-folder"][opt.era], jsonInput, opt.era, opt.unblind, opt.addSyst)
