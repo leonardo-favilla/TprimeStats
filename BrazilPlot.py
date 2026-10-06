@@ -32,7 +32,7 @@ def read_combineOutput(mass=0.7):
     print("Reading combine output for mass", mass)
     m = str(int(mass*10**3))
     dcFolderPath   = f'{jsoninput["dc-folder"][era]}/TprimeToTZ_{m}'
-    combinecommand = f"combine -M AsymptoticLimits -d {dcFolderPath}/TprimeToTZ_{m}.txt > out.log"
+    combinecommand = f"combine -M AsymptoticLimits -d {dcFolderPath}/TprimeToTZ_{m}.txt > {dcFolderPath}/out.log"
     subprocess.run(f"cd {dcFolderPath} && {combinecommand}", shell=True, check=True)
     # subprocess.run("cd "+era+"/TprimeToTZ_"+m+" && "+combinecommand, shell=True, check=True)
     # os.popen("cd -")
