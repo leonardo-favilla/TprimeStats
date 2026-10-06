@@ -44,7 +44,7 @@ def writeTotalDatacard(jsoninput, era, unblind, sig):
     cb = ch.CombineHarvester()
     cb.SetVerbosity(3)
 
-    cats = [(i, cat) for i,cat in enumerate(jsoninput["categories"])]
+    cats = [(i, cat) for i, (cat, useRealData) in enumerate(jsoninput["categories"])]
     backgrounds = jsoninput["processes"]["backgrounds"]
     # signals = jsoninput["processes"]["signals"]
     signals = [sig]

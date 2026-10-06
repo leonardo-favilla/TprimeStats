@@ -8,7 +8,7 @@ import subprocess
 parser = argparse.ArgumentParser(description="Collect histograms for one era")
 parser.add_argument("-e", "--era",              default="2022",                 help="Era to process, e.g. 2022, 2022EE, 2022+2023, etc.")
 parser.add_argument("-j", "--jsonInput",        default="settings.json",        help="Settings JSON file")
-parser.add_argument("-u", "--unblind",          action="store_true",            help="Use data instead of the background sum")
+parser.add_argument("-u", "--unblind",          action="store_true",            help="Use real data in every category, overriding the per-category data-source flags")
 parser.add_argument("--addSyst",                action="store_true",            help="Collect shape systematics")
 opt = parser.parse_args()
 
@@ -17,7 +17,7 @@ def CollectHistos(inputEosFolder, outFolderPath, jsonInput, era, unblind=False, 
     outFolderPath   = outFolderPath.rstrip("/")
     lumi            = jsonInput["lumi_dict"][era]
     var             = jsonInput["variable"]
-    bins            = jsonInput["categories"]
+    bins            = [(name, useRealData) for name, useRealData in jsonInput["categories"]]
     backgrounds     = jsonInput["processes"]["backgrounds"]
     signals         = jsonInput["processes"]["signals"]
     files           = [f for f in os.listdir(inputEosFolder) if f.endswith(".root")]
@@ -53,7 +53,7 @@ def CollectHistos(inputEosFolder, outFolderPath, jsonInput, era, unblind=False, 
         for process, processFileList in processFiles.items():
             if process not in target_processes:
                 continue
-            for region in bins:
+            for region, useRealData in bins:
                 h_out                           = None
                 inputName                       = f"{var}_{region}_{inputSyst}"
                 outputName                      = f"hist_{process}_{region}_{outputSyst}"
@@ -84,14 +84,14 @@ def CollectHistos(inputEosFolder, outFolderPath, jsonInput, era, unblind=False, 
     print(componentIntegrals)
 
     ##### Collect DATA histograms #####
-    for region in bins:
+    for region, useRealData in bins:
         outputName                      = f"hist_data_obs_{region}_nominal"
         h_out                           = None
         componentIntegrals[outputName]  = []
         summaryInfo[outputName]         = (region, "nominal", "data_obs")
-        if unblind:
+        if unblind or useRealData:
             if not dataFiles: raise RuntimeError("No data ROOT files found")
-            inputName = f"{var}_{region}_"
+            inputName = f"{var}_{region}"
             for i, f in enumerate(dataFiles):
                 input = ROOT.TFile.Open(f"{inputEosFolder}/{f}")
                 tmp = input.Get(inputName)

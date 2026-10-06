@@ -2,7 +2,7 @@
     "variable"      : "MT_T",
     
     "plots-folder"  : {
-                        "2022"          : "/eos/user/l/lfavilla/RDF_DManalysis/results_wTrotaScaleFactor_newWPs_TopPtReweightingTheory/run2023_July2026_AllProcesses_OnlyPass_OnlySelectedTop/plots/",
+                        "2022"          : "",
                         "2022EE"        : "",
                         "2023"          : "/eos/user/l/lfavilla/RDF_DManalysis/results_wTrotaScaleFactor_newWPs_TopPtReweightingTheory/run2023_July2026_AllProcesses_OnlyPass_OnlySelectedTop/plots/",
                         "2023postBPix"  : "",
@@ -30,18 +30,18 @@
 
     "processes"     : { 
                         "backgrounds": ["TT", "TW", "ZJets", "WJets", "QCD"],
-                        "signals": ["TprimeToTZ_700", "TprimeToTZ_1000", "TprimeToTZ_1800"]
+                        "signals": ["TprimeToTZ_700","TprimeToTZ_1000","TprimeToTZ_1800"]
                         },
     
     "categories"    : [
-                        "AH",
-                        "SL",
-                        "AH0lZR",
-                        "AH1lWR",
-                        "SRTopMix0fjets",
-                        "SRTopMixatleast1fjets",
-                        "SRTopMer0fjets",
-                        "SRTopMeratleast1fjets"
+                        ["AH", 1],
+                        ["SL", 1],
+                        ["AH0lZR", 1],
+                        ["AH1lWR", 1],
+                        ["SRTopMix0fjets", 0],
+                        ["SRTopMixatleast1fjets", 0],
+                        ["SRTopMer0fjets", 0],
+                        ["SRTopMeratleast1fjets", 0]
                         ],
     
     "systematics"   : {
