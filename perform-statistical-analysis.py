@@ -32,3 +32,4 @@ for mass in massPoints:
     cmd4 = f"python3 doGoodnessOfFit.py -e {era} -m {mass} -j {settings_file} -t 500 -s 123456"
     subprocess.run(cmd4, shell=True, check=True)
     cmd5 = f"python3 doBiasTest.py -e {era} -m {mass} -j {settings_file} -t 500"
+    subprocess.run(cmd5, shell=True, check=True)
