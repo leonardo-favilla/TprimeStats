@@ -72,8 +72,7 @@ print(f"    rExpected 16%:      {r_dict['expected_16p0']}")
 print(f"    rExpected 50%:      {r_dict['expected_50p0']}")
 print(f"    rExpected 84%:      {r_dict['expected_84p0']}")
 
-r_dict              = {}
-r_dict['BOnly']     = 0
+
 bias_dir = f"{jsoninput['dc-folder'][era]}/TprimeToTZ_{mass}/bias/"
 if not os.path.exists(bias_dir):
     os.makedirs(bias_dir)
