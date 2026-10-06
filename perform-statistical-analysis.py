@@ -22,10 +22,13 @@ massPoints      = [signal.split('_')[-1] for signal in jsoninput["processes"]["s
 
 
 cmd1 = f"python3 CollectHistos.py -e {era} -j {settings_file} --addSyst {'--unblind' if unblind else ''}"
-cmd2 = f"python3 CreateDatacards.py -e {era} -j {settings_file} --addSyst"
+cmd2 = f"python3 CreateDatacards.py -e {era} -j {settings_file} --addSyst --addMCStat"
 subprocess.run(cmd1, shell=True, check=True)
 subprocess.run(cmd2, shell=True, check=True)
 
 for mass in massPoints:
     cmd3 = f"python3 doImpacts.py -e {era} -m {mass} -j {settings_file}"
     subprocess.run(cmd3, shell=True, check=True)
+    cmd4 = f"python3 doGoodnessOfFit.py -e {era} -m {mass} -j {settings_file} -t 500 -s 123456"
+    subprocess.run(cmd4, shell=True, check=True)
+    cmd5 = f"python3 doBiasTest.py -e {era} -m {mass} -j {settings_file} -t 500"
