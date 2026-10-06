@@ -72,8 +72,8 @@ print(f"    rExpected 16%:      {r_dict['expected_16p0']}")
 print(f"    rExpected 50%:      {r_dict['expected_50p0']}")
 print(f"    rExpected 84%:      {r_dict['expected_84p0']}")
 
-
-
+r_dict              = {}
+r_dict['BOnly']     = 0
 bias_dir = f"{jsoninput['dc-folder'][era]}/TprimeToTZ_{mass}/bias/"
 if not os.path.exists(bias_dir):
     os.makedirs(bias_dir)
@@ -113,7 +113,7 @@ for key, injected_signal in r_dict.items():
         -4,
         4,
         0,
-        1.3 * h.GetMaximum(),
+        1.6 * h.GetMaximum(),
         "(r - r_{Truth}) / #sigma_{r}",
         "Pseudo-experiments",
         square=True,
@@ -136,6 +136,7 @@ for key, injected_signal in r_dict.items():
     legend = CMS.cmsLeg(0.48, 0.77, 0.90, 0.92, textSize=0.035)
     legend.AddEntry(h,              f"Pseudo-experiments ({successful_fits})",         "lep")
     legend.AddEntry(func,           f"Fit: #mu = {mean:.3f}, #sigma = {sigma:.3f}",    "l")
+    legend.AddEntry(ROOT.nullptr,   f"r_{{Truth}} = {injected_signal}",                "")
     legend.Draw()
 
     c1.Update()
