@@ -12,7 +12,7 @@ parser.add_option('-u', '--unblind',            dest='unblind',         action='
 # parser.add_option('-s', '--singledatacards',    dest='singledatacards', action='store_true',    default=False,              help='Write single datacards per each bin')
 parser.add_option('--addSyst',                  dest='addSyst',         action='store_true',    default=False,              help='add Systematics in the datacards')
 parser.add_option('--addMCStat',                dest='addMCStat',       action='store_true',    default=False,              help='add auto MC Stat in the datacards')
-parser.add_option('--suffix',                   dest='suffix',          type=str,               default=None,               help='suffix to add to histo.root file name (e.g. histo2022_<suffix>.root)')
+parser.add_option('-s','--suffix',                   dest='suffix',          type=str,               default=None,               help='suffix to add to histo.root file name (e.g. histo2022_<suffix>.root)')
 
 (opt, args)     = parser.parse_args()
 # Open JSON file
@@ -34,6 +34,7 @@ def writeTotalDatacard(jsoninput, era, unblind, sig, suffix=""):
     cb.SetVerbosity(3)
 
     cats = [(i, cat) for i, (cat, useRealData) in enumerate(jsoninput["categories"])]
+    print("categories are : " ,cats)
     backgrounds = jsoninput["processes"]["backgrounds"]
     # signals = jsoninput["processes"]["signals"]
     signals = [sig]
@@ -80,6 +81,7 @@ def writeTotalDatacard(jsoninput, era, unblind, sig, suffix=""):
 
     cb.PrintAll()
     sigFolderPath = f"{outFolderPath}/{sig}{f'_{suffix}' if suffix else ''}"
+    print(sigFolderPath)
     if not os.path.exists(sigFolderPath):
         os.makedirs(sigFolderPath)
     cb.WriteDatacard(f"{sigFolderPath}/{sig}.txt", f"{sigFolderPath}/{sig}.root")
@@ -96,6 +98,7 @@ def writeTotalDatacard(jsoninput, era, unblind, sig, suffix=""):
             indent=2,
             sort_keys=True,
         )
+    print(f"{sigFolderPath}/datacard_metadata.json")
     if opt.addMCStat:
         with open(f"{sigFolderPath}/{sig}.txt", "a") as f:
             f.write("* autoMCStats 0 0 1\n")
