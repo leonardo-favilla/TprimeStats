@@ -137,8 +137,8 @@ leg.AddEntry(ge2, "95% expected","F")
 #leg.AddEntry(obsrun2, "observed Full Run 2","L")
 #leg.AddEntry(exprun2, "expected Full Run 2","L")
 CMS.CMS_lumi(canv, iPos)
-CMS.SaveCanvas(canv, f"{outputFolderPath}/limitPlot4SR2rateParams_{era}.png", False)
-CMS.SaveCanvas(canv, f"{outputFolderPath}/limitPlot4SR2rateParams_{era}.pdf")
+CMS.SaveCanvas(canv, f"{outputFolderPath}/limitPlot_{finalmodel}_{era}{suffix}.png", False)
+CMS.SaveCanvas(canv, f"{outputFolderPath}/limitPlot_{finalmodel}_{era}{suffix}.pdf")
 # Save expected limits
 
 with open(f"{outputFolderPath}/expectedLimits.txt", "w") as f:
@@ -191,6 +191,6 @@ CMS.cmsDraw(ge, "3", fcolor = ROOT.TColor.GetColor("#607641"))
 CMS.cmsDraw(g, "L", lstyle=ROOT.kDashed)
 CMS.cmsDraw(th, "L", lcolor = ROOT.TColor.GetColor("#bd1f01"), lwidth=2)
 CMS.CMS_lumi(canv, iPos)
-CMS.SaveCanvas(canv, f"{outputFolderPath}/signalstrength_{era}.png", False)
-CMS.SaveCanvas(canv, f"{outputFolderPath}/signalstrength_{era}.pdf")
+CMS.SaveCanvas(canv, f"{outputFolderPath}/signalstrength_{finalmodel}_{era}{suffix}.png", False)
+CMS.SaveCanvas(canv, f"{outputFolderPath}/signalstrength_{finalmodel}_{era}{suffix}.pdf")
 
