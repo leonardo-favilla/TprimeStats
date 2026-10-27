@@ -13,7 +13,8 @@ parser.add_argument("-u", "--unblind",      action="store_true",                
 parser.add_argument('-s', '--suffix',       type=str,               default='',                 help='Suffix labelling the whole run (e.g. histo2023_<suffix>.root)')
 parser.add_argument('-m', '--mode',       type=str,               default='cmdlpbig',                 help='Operation mode - each letter activates one part: c=collect histos; m=make positive /fix histograms, d=datacard creation, l=limit evaluation, p=plot limit (brazil plot), i=impacts, g=gof')
 parser.add_argument('--dryrun',       action="store_true", default=False,                 help='just get run the commands file without executing them')
-parser.add_argument('-v', '--verbose',       type=int,               default=0,                 help='Verbosity level')
+parser.add_argument('--verbose',       type=int,               default=0,                 help='Verbosity level')
+parser.add_argument('-v', '--variant',       type=str,               default='',                 help='Suffix labelling the variant at datacard level)')
 args = parser.parse_args()
 
 
@@ -22,7 +23,9 @@ args = parser.parse_args()
 era             = args.era
 unblind         = "--unblind" if args.unblind else ""
 histo_suffix    = args.suffix                                                       # suffix of histo<era>_<suffix>.root
-suffix          = "_".join(s for s in [args.suffix, "zerosFixed" if "m" in args.mode else ""] if s)   # suffix of the whole run 
+suffix          = "_".join(s for s in [args.suffix, "zerosFixed" if "m" in args.mode else "" ] if s)   # suffix of the whole run
+variant         = args.variant
+suffix_dc       = "_".join(s for s in [suffix, variant ] if s)   # suffix for the datacard-level variation
 doRun           = not args.dryrun
 verbose         = args.verbose
 
@@ -44,7 +47,8 @@ with open(commands_file, "w") as f:
     f.write(f"cd {os.getcwd()}\n")
 
 suffix_opt      = f"--suffix {suffix}" if suffix else ""
-
+variant_opt      = f"--variant {variant}" if variant else ""
+suffix_dc_opt      = f"--suffix {suffix_dc}" if variant else suffix_opt
 
 
 def write_run(cmd, doRun=True):
@@ -63,18 +67,18 @@ if ("m" in args.mode):
     write_run(f"python3 makePositiveHistos.py -i {output_dir}/histo{era}{f'_{histo_suffix}' if histo_suffix else ''}.root",doRun=False)
 
 if ("d" in args.mode):
-    write_run(f"python3 CreateDatacards.py -e {era} -j {settings_file} --addSyst --addMCStat {suffix_opt} {unblind}",doRun=False)
+    write_run(f"python3 CreateDatacards.py -e {era} -j {settings_file} --addSyst --addMCStat {suffix_opt} {variant_opt} {unblind}",doRun=False)
 
 if ("l" in args.mode):
-    write_run(f"python3 RunLimits.py -e {era} -j {settings_file} {suffix_opt} {unblind}",doRun=False)
+    write_run(f"python3 RunLimits.py -e {era} -j {settings_file} {suffix_dc_opt} {unblind}",doRun=False)
 
 if ("p" in args.mode):
-    write_run(f"python3 BrazilPlot.py -e {era} -j {settings_file} {suffix_opt} {unblind}",doRun=False)
+    write_run(f"python3 BrazilPlot.py -e {era} -j {settings_file} {suffix_dc_opt} {unblind}",doRun=False)
 
 #unpackLabel(signal,verbose)[0] for signal in jsoninput["processes"]["signals"]]
 for signal in jsoninput["processes"]["signals"]:
     mass=str(int(1000*unpackLabel(signal,verbose)[0]))
-    signalpath=output_dir+"/"+signal+"_"+suffix+"/"
+    signalpath=output_dir+"/"+signal+"_"+suffix_dc+"/"
     impactOptions = "--robustFit 1 --cminDefaultMinimizerStrategy=1 --setParameterRanges r=-100,100" # -t -1 --autoBoundsPOIs r --autoRange 1 --cminDefaultMinimizerStrategy=1
     if("i" in args.mode):
         write_run(f"python3 doImpacts.py -e {era} -m {mass} --signal {signal} --sigpath {signalpath} -j {settings_file} {suffix_opt} --FitOption '{impactOptions}'",doRun=False)

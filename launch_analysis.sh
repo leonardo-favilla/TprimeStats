@@ -8,8 +8,8 @@
 # -m c --> collects histograms from the repository 
 # -m m --> modifies the histograms to fix the zeros and the systematics. Note that this also changes the name of the output to reflect that, by adding "fixZeros" to the suffix.
 # -m d --> creates the datacards for the fit according to your settings.json
-# -m l --> hadd files together after is finished.
-# -m p --> perform the analysis chain.
+# -m l --> evaluates the limits
+# -m p --> does the brazil plot
 # There are also 3 possible options for performing statistical tests:
 # -m g --> perform goodness of fit tests
 # -m i --> make impact plots
@@ -21,15 +21,15 @@
 # - Limits_era_suffix.json file with the limits result. 
 # - A shell configuration file (.sh) file with all the executed commands, copied both in the folder and locally for convenience.
 ### ==> Other options:
+# --variant(-v): you can start from a given histo<suffix>.root and produce the next steps from the datacard onwards without re-generating the histo file
 # --dryrun: runs only the commands without executing them. The .sh file will be produced.
-# --verbose: sets verbosity level (0: minimum, >1 maximum) 
+# --verbose: sets verbosity level (0: minimum, >1 maximum)
 ### ==> Examples of operations:
 # You can make a single string to run multiple options to gether, for example:
 # 1) python3 perform-statistical-analysis.py -m cdlpm -i mysettings.json --e 2024
 #    => This will collect histograms, modify them, make the datacards, the limit, and the brazil plot 
 # 2) python3 perform-statistical-analysis.py -m dlp -i mysettings.json --e 2024
 #    => This will not re-collect the histograms and NOT modify them, but make the fit to the original plots.
-# Note this will work only if you previously collected the histograms, e.g. if you ran the command in 1) 
+# Note this will work only if you previously collected the histograms, e.g. if you ran the command in 1)
 ####################################################################################################
-
-python3 perform-statistical-analysis.py -j settingsOrsoNominalFit.json -e 2024 -s test -s testPSAV2 -m cmdlp
+python3 perform-statistical-analysis.py -j settingsOrsoNominalFit_reduced.json -e 2024 -s test -m cmdlp 
