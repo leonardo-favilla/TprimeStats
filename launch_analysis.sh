@@ -6,6 +6,7 @@
 # There are several working options that you can select with the -m (or --mode) option, and you can select multiple.  
 # The main working options are:
 # -m c --> collects histograms from the repository 
+# -m s --> symmetrizes the jesTotal and jer up/down variations around the nominal. This adds "symmetrized" to the suffix.
 # -m m --> modifies the histograms to fix the zeros and the systematics. Note that this also changes the name of the output to reflect that, by adding "fixZeros" to the suffix.
 # -m d --> creates the datacards for the fit according to your settings.json
 # -m l --> evaluates the limits
@@ -32,4 +33,4 @@
 #    => This will not re-collect the histograms and NOT modify them, but make the fit to the original plots.
 # Note this will work only if you previously collected the histograms, e.g. if you ran the command in 1)
 ####################################################################################################
-python3 perform-statistical-analysis.py -j settingsOrsoNominalFit_reduced.json -e 2024 -s test -m cmdlp 
+python3 perform-statistical-analysis.py -j settingsOrsoNominalFit_reduced.json -e 2024 -s test -m csmdlp

@@ -67,7 +67,8 @@ A copy of the settings and the list of executed commands (`settings_<suffix>.jso
 
 ```bash
 python3 CollectHistos.py -e 2023 --addSyst                      # collect histograms -> histo2023.root
-python3 makePositiveHistos.py -i <dc-folder>/histo2023.root     # fix zero-content bins
+python3 symmetrizeHistos.py -i <dc-folder>/histo2023.root -s jesTotal,jer   # symmetrize JES/JER
+python3 makePositiveHistos.py -i <dc-folder>/histo2023_symmetrized.root     # fix zero-content bins
 python3 CreateDatacards.py -e 2023 --addSyst --addMCStat        # write datacards
 python3 BrazilPlot.py -e 2023                                   # limits (Brazil plot)
 python3 doImpacts.py -e 2023 -m 1000                            # impacts

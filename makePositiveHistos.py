@@ -19,11 +19,12 @@ print(histo_dict.keys())
 
 for histo_name,histo in histo_dict.items():
     tmp = histo.Clone(histo_name)
-    for i in range(0, histo.GetNbinsX()+2):
-        if histo.GetBinContent(i) < thrInput :
-            print(f"Setting bin {i} of histogram {histo.GetName()} to {thrOutput} because it content is {histo.GetBinContent(i)} which is below the threshold {thrInput}")
-            tmp.SetBinContent(i, thrOutput)
-            tmp.SetBinError(i, thrOutput*0.99)
+    if "data_obs" not in histo_name: # never touch data
+        for i in range(0, histo.GetNbinsX()+2):
+            if histo.GetBinContent(i) < thrInput :
+                print(f"Setting bin {i} of histogram {histo.GetName()} to {thrOutput} because it content is {histo.GetBinContent(i)} which is below the threshold {thrInput}")
+                tmp.SetBinContent(i, thrOutput)
+                tmp.SetBinError(i, thrOutput*0.99)
     
     outfile.cd()
     tmp.Write(histo_name, ROOT.TObject.kOverwrite)

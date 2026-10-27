@@ -11,7 +11,7 @@ parser.add_argument('-j', '--jsonInput',    type=str,               default='set
 #parser.add_argument('-p', '--positive',     action="store_true",                                help='Fix zero bin contents in histograms')
 parser.add_argument("-u", "--unblind",      action="store_true",                                help="Use data instead of the background sum")
 parser.add_argument('-s', '--suffix',       type=str,               default='',                 help='Suffix labelling the whole run (e.g. histo2023_<suffix>.root)')
-parser.add_argument('-m', '--mode',       type=str,               default='cmdlpbig',                 help='Operation mode - each letter activates one part: c=collect histos; m=make positive /fix histograms, d=datacard creation, l=limit evaluation, p=plot limit (brazil plot), i=impacts, g=gof')
+parser.add_argument('-m', '--mode',       type=str,               default='csmdlpbig',                 help='Operation mode - each letter activates one part: c=collect histos; s=symmetrize jesTotal/jer; m=make positive /fix histograms, d=datacard creation, l=limit evaluation, p=plot limit (brazil plot), i=impacts, g=gof')
 parser.add_argument('--dryrun',       action="store_true", default=False,                 help='just get run the commands file without executing them')
 parser.add_argument('--verbose',       type=int,               default=0,                 help='Verbosity level')
 parser.add_argument('-v', '--variant',       type=str,               default='',                 help='Suffix labelling the variant at datacard level)')
@@ -23,7 +23,8 @@ args = parser.parse_args()
 era             = args.era
 unblind         = "--unblind" if args.unblind else ""
 histo_suffix    = args.suffix                                                       # suffix of histo<era>_<suffix>.root
-suffix          = "_".join(s for s in [args.suffix, "zerosFixed" if "m" in args.mode else "" ] if s)   # suffix of the whole run
+sym_suffix      = "_".join(s for s in [args.suffix, "symmetrized" if "s" in args.mode else ""] if s)  # suffix of histo<era>_<suffix>_symmetrized.root
+suffix          = "_".join(s for s in [sym_suffix, "zerosFixed" if "m" in args.mode else "" ] if s)   # suffix of the whole run
 variant         = args.variant
 suffix_dc       = "_".join(s for s in [suffix, variant ] if s)   # suffix for the datacard-level variation
 doRun           = not args.dryrun
@@ -63,8 +64,11 @@ fitoptions=""#we should give as arguments to the limit functions some options - 
 if ("c" in args.mode):
     write_run(f"python3 CollectHistos.py -e {era} -j {settings_file} --addSyst {f'--suffix {histo_suffix}' if histo_suffix else ''} {unblind}",doRun=False)
 
+if ("s" in args.mode):
+    write_run(f"python3 symmetrizeHistos.py -i {output_dir}/histo{era}{f'_{histo_suffix}' if histo_suffix else ''}.root -s jesTotal,jer",doRun=False)
+
 if ("m" in args.mode):
-    write_run(f"python3 makePositiveHistos.py -i {output_dir}/histo{era}{f'_{histo_suffix}' if histo_suffix else ''}.root",doRun=False)
+    write_run(f"python3 makePositiveHistos.py -i {output_dir}/histo{era}{f'_{sym_suffix}' if sym_suffix else ''}.root",doRun=False)
 
 if ("d" in args.mode):
     write_run(f"python3 CreateDatacards.py -e {era} -j {settings_file} --addSyst --addMCStat {suffix_opt} {variant_opt} {unblind}",doRun=False)
