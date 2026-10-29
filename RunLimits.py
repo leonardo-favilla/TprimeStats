@@ -35,6 +35,7 @@ signals                             = jsoninput["processes"]["signals"]
 signalsSubset=[]
 suffix= opt.suffix if opt.suffix=="" else "_"+opt.suffix
 blindlabel= "_obs_" if opt.unblind else "" 
+combineOptions="" 
 
 print ("suffix is", suffix)
 def RunCombine_Limits(signal,doLaunch=True):
@@ -42,7 +43,7 @@ def RunCombine_Limits(signal,doLaunch=True):
 #    m = str(int(mass*10**3))
     dcFolderPath   = f'{jsoninput["dc-folder"][era]}/{signal}{suffix}'
     if(doLaunch):
-        combinecommand = f"combine -M AsymptoticLimits -d {dcFolderPath}/{signal}.txt > {dcFolderPath}/out.log"
+        combinecommand = f"combine -M AsymptoticLimits -d {dcFolderPath}/{signal}.txt {combineOptions} > {dcFolderPath}/out.log"
         subprocess.run(f"cd {dcFolderPath} && {combinecommand}", shell=True, check=True)
     else:subprocess.run(f"cd {dcFolderPath}", shell=True, check=True)
     with open(f"{dcFolderPath}/out.log") as f:
