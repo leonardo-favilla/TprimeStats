@@ -71,6 +71,8 @@ print("r vectors: ", r, "\n",r_ey1_down, "\n",r_ey1_up,"\n", r_ey2_down, "\n",r_
 # masses      = [0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8]
 ex          = [0]*len(masses)
 
+print("sigmas are ",sigma)
+
 y_central   = [s*r_ for s,r_ in zip(sigma, r)]
 y1_up       = [s*r_ for s,r_ in zip(sigma, r_ey1_up)]
 y1_down     = [s*r_ for s,r_ in zip(sigma, r_ey1_down)]
@@ -102,6 +104,16 @@ if("TBDM" in finalmodel):
     masses_observedFullRun2 = [0.01,  0.05,   0.1,    0.15,    0.2,     0.25,    0.3,     0.35,    0.4,     0.45,     0.5,     1.0 ]
     y_expectedFullRun2      = [2.779, 0.7454, 0.2848, 0.1388,  0.07662, 0.04614, 0.02958, 0.01957, 0.01141, 0.006877, 0.004427,0.0002494]
     exprun2                 = ROOT.TGraph(len(masses_observedFullRun2), array('d',masses_observedFullRun2),  array('d',y_expectedFullRun2))
+    
+    #print(finalmodel)
+if("TprimeToTZNW" in finalmodel):
+    masses_observedFullRun2 = [0.7,     0.8,     0.9,     1.0,      1.1,     1.2,     1.3,     1.4,     1.5,     1.6,      1.7,      1.8]
+    xrun2=masses_observedFullRun2
+    y_expectedFullRun2      = [0.36602, 0.17070, 0.10685, 0.07576,  0.05272, 0.03193, 0.02376, 0.01967, 0.01859, 0.016390, 0.013720, 0.012710 ]
+    y_observedFullRun2      = [0.21201, 0.09651, 0.07699, 0.07321,  0.06227, 0.04283, 0.04972, 0.04938, 0.03669, 0.022630, 0.018300, 0.015040 ]
+    exprun2 = ROOT.TGraph(len(xrun2), array('d',xrun2), array('d',y_expectedFullRun2) )
+    obsrun2 = ROOT.TGraph(len(xrun2), array('d',xrun2), array('d',y_observedFullRun2) )
+    #    thrun2                 = th
 
 # Styling
 # CMS.SetExtraText("Preliminary")
@@ -124,7 +136,8 @@ if("Tprime" in finalmodel):
 CMS.cmsDraw(ge2, "3L", fcolor = ROOT.TColor.GetColor("#F5BB54"))
 CMS.cmsDraw(ge, "3", fcolor = ROOT.TColor.GetColor("#607641"))
 CMS.cmsDraw(g, "L", lstyle=ROOT.kDashed)
-CMS.cmsDraw(exprun2, "L", lcolor = ROOT.TColor.GetColor("#bd1f01"), lwidth=2)
+CMS.cmsDraw(th, "L", lcolor = ROOT.TColor.GetColor("#bd1f01"), lwidth=2)
+CMS.cmsDraw(exprun2, "L", lcolor = ROOT.TColor.GetColor(ROOT.kBlue), lwidth=2)
 #CMS.cmsDraw(obsrun2, "L", lcolor = ROOT.TColor.GetColor("#964a8b"), lwidth=2)
 #MS.cmsDraw(exprun2, "L", lcolor = ROOT.TColor.GetColor("#964a8b"), lwidth=2, lstyle=ROOT.kDashed)
 

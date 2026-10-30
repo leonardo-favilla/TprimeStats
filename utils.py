@@ -7,7 +7,6 @@ def unpackLabel(l,verbose=0):#function to extract the model from the label
         model=(l.split("_mPhi")[0])
     if "Tprime" in l:
         mass=0.001*int((l.split("TprimeToTZ_")[1]))
-        model=("NW")
-        print
+        model=("TprimeToTZNW")
     if(verbose>0):print(f"label: {l}, mass: {mass}, model: {model}" )    
     return mass,model
