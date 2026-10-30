@@ -125,7 +125,7 @@ CMS.SetEnergy(13.6)
 CMS.ResetAdditionalInfo()
 #y_str = "#sigma(pp#rightarrowTbq) #times BR(T#rightarrowtZ) [pb]"
 signal_y_min = max(0, min(np.array(y_central) - np.array(y2_down)) * 0.9)
-signal_y_max = max(np.array(y_central) + np.array(y2_up)) * 1.1
+signal_y_max = max(np.array(y_central) + np.array(y2_up)) * 10 # log scale: leave room for the CMS label and the legend
 if("TBDM" in finalmodel):
     y_str = "#sigma (pp#rightarrow t #varphi) [pb]"
     canv = CMS.cmsCanvas(canv_name, min(x)-0.05,max(x)+0.05,signal_y_min,signal_y_max,"#varphi mass [TeV]",y_str,square=True,extraSpace=0.05,iPos=iPos)
@@ -137,7 +137,7 @@ CMS.cmsDraw(ge2, "3L", fcolor = ROOT.TColor.GetColor("#F5BB54"))
 CMS.cmsDraw(ge, "3", fcolor = ROOT.TColor.GetColor("#607641"))
 CMS.cmsDraw(g, "L", lstyle=ROOT.kDashed)
 CMS.cmsDraw(th, "L", lcolor = ROOT.TColor.GetColor("#bd1f01"), lwidth=2)
-CMS.cmsDraw(exprun2, "L", lcolor = ROOT.TColor.GetColor(ROOT.kBlue), lwidth=2)
+CMS.cmsDraw(exprun2, "L", lcolor = ROOT.TColor.GetColor("#964a8b"), lwidth=2)
 #CMS.cmsDraw(obsrun2, "L", lcolor = ROOT.TColor.GetColor("#964a8b"), lwidth=2)
 #MS.cmsDraw(exprun2, "L", lcolor = ROOT.TColor.GetColor("#964a8b"), lwidth=2, lstyle=ROOT.kDashed)
 
@@ -146,9 +146,9 @@ leg = CMS.cmsLeg(0.50, 0.60, 0.94, 0.90, textSize=0.026)
 leg.AddEntry(g, "expected","L")
 leg.AddEntry(ge, "68% expected","F")
 leg.AddEntry(ge2, "95% expected","F")
-#leg.AddEntry(th, "#sigma(NLO), Singlet T, #Gamma/m_{T}<0.01","L")
+leg.AddEntry(th, "#sigma(NLO), Singlet T, #Gamma/m_{T}<0.01","L")
 #leg.AddEntry(obsrun2, "observed Full Run 2","L")
-#leg.AddEntry(exprun2, "expected Full Run 2","L")
+leg.AddEntry(exprun2, "expected Full Run 2","L")
 CMS.CMS_lumi(canv, iPos)
 CMS.SaveCanvas(canv, f"{outputFolderPath}/limitPlot_{finalmodel}_{era}{suffix}.png", False)
 CMS.SaveCanvas(canv, f"{outputFolderPath}/limitPlot_{finalmodel}_{era}{suffix}.pdf")
