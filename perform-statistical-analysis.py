@@ -92,9 +92,6 @@ for signal in jsoninput["processes"]["signals"]:
         write_run(f"python3 doBiasTest.py -e {era} -m {mass} --signal {signal} --sigpath {signalpath} -j {settings_file} -t 500 {suffix_opt}",doRun=False)
 
 
-#copy commands file locally for ease of use
-os.system("cp "+commands_file+" .")
-
 #The best way is to first write, then run, otherwise when it fails it does not write and one cannot run the failed command for debugging
 if(doRun):
     subprocess.run("source "+commands_file, shell=True, check=True)

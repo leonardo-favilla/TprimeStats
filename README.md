@@ -61,7 +61,7 @@ python3 perform-statistical-analysis.py -e 2023 -p
 - `-s <suffix>`: label the whole run (e.g. `histo2023_<suffix>.root`, `TprimeToTZ_<mass>_<suffix>/`)
 - `-u`: unblind (use data instead of the background sum)
 
-A copy of the settings and the list of executed commands (`settings_<suffix>.json`, `commands_<suffix>.sh`) is saved in the `dc-folder`.
+A copy of the settings and the list of executed commands (`settings_<suffix>.json`, `commands_<suffix>.sh`) is saved in the `dc-folder`, together with the limits (`Limits_<era>_<suffix>.json`).
 
 ## Single steps
 

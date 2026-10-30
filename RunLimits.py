@@ -80,5 +80,5 @@ for ns in range(len(signals)):
     
 namejson="Limits_"+era+blindlabel+suffix+".json"
 
-with open(namejson,'w') as fp:
+with open(f"{outputFolderPath}/{namejson}",'w') as fp:
     json.dump(Resultdict,fp)

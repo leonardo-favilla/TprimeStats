@@ -38,7 +38,7 @@ suffix= opt.suffix if opt.suffix=="" else "_"+opt.suffix
 blindlabel= "_obs_" if opt.unblind else "" 
 namejson="Limits_"+era+blindlabel+suffix+".json"#take the same naming convention of the runlimits for the suffix/era/unblind if nothing specified
 
-limitInputName = namejson if opt.limitInput=="" else opt.limitInput
+limitInputName = f"{outputFolderPath}/{namejson}" if opt.limitInput=="" else opt.limitInput
 with open(limitInputName) as file:
     limitInput = json.load(file)
 

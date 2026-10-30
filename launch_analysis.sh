@@ -19,8 +19,8 @@
 ### ==> Output:
 # This will create, besides the obvious output of the commands:
 # - A remote folder in your settings that will contain the datacards for each signal process.
-# - Limits_era_suffix.json file with the limits result. 
-# - A shell configuration file (.sh) file with all the executed commands, copied both in the folder and locally for convenience.
+# - Limits_era_suffix.json file with the limits result, in the dc-folder.
+# - A shell configuration file (.sh) file with all the executed commands, in the dc-folder.
 ### ==> Other options:
 # --variant(-v): you can start from a given histo<suffix>.root and produce the next steps from the datacard onwards without re-generating the histo file
 # --dryrun: runs only the commands without executing them. The .sh file will be produced.
